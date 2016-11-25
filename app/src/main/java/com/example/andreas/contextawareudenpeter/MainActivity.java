@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
 
+        senSensorManager.unregisterListener(this, senAccelerometer);
     }
 
     public void startListening() {
@@ -74,20 +76,40 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             double accData = Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2));
 
             //Add to sample window of 128 values
-            for(int counter=0; counter < 128 ; counter++){
+
+
+            if(counter < 128){
+                counter++;
                 samples.add(accData);
-            }
-            if (counter == 127) {
-                //Calculate min, max
-                //int min = Collections.min(samples);
-                //int max = Collections.max(samples);
+                Log.d("tag",counter + "");
+            } else {
+                counter = 0;
+                Log.d("tag2",counter + " nu beregner vi");
+                double min = samples.get(0);
+                double max = samples.get(0);
+                double avg;
+                double standarddeviation = 0;
+                double sum = 0;
 
-                //Calculate standard deviation
                 for (Double sample : samples) {
+                    sum += sample;
+                    if(sample < min) min = sample;
+                    if(sample > max) max = sample;
+                }
+                avg = sum / samples.size();
 
+                for (Double sample : samples)
+                {
+                    standarddeviation = standarddeviation + Math.pow(sample - avg, 2);
                 }
 
-                counter = 0;
+                standarddeviation = Math.sqrt(standarddeviation/samples.size());
+
+                Log.d("hej", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + standarddeviation);
+
+                samples.clear();
+
+
             }
         }
     }
