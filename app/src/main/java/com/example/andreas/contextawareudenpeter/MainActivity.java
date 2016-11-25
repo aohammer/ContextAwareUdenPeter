@@ -14,6 +14,7 @@ import android.widget.Button;
 import java.io.File;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -73,13 +74,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             double accData = Math.sqrt(Math.pow(event.values[0], 2) + Math.pow(event.values[1], 2) + Math.pow(event.values[2], 2));
 
             //Add to sample window of 128 values
-            for(int counter=0; counter<=128; counter++){
+            for(int counter=0; counter < 128 ; counter++){
                 samples.add(accData);
             }
-            if (counter == 128) {
-                //Calculate min, max & std
+            if (counter == 127) {
+                //Calculate min, max
+                //int min = Collections.min(samples);
+                //int max = Collections.max(samples);
+
+                //Calculate standard deviation
                 for (Double sample : samples) {
+
                 }
+
+                counter = 0;
             }
         }
     }
