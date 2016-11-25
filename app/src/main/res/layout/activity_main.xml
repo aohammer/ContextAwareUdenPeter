@@ -10,8 +10,32 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.andreas.contextawareudenpeter.MainActivity">
 
+    <Button
+        android:text="Stop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonStop"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/buttonStart"
+        android:layout_alignStart="@+id/buttonStart" />
+
+    <Button
+        android:text="Start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonStart"
+        android:layout_above="@+id/buttonStop"
+        android:layout_centerHorizontal="true" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="Click start to start logging. Stop to stop again."
+        android:id="@+id/textView"
+        android:layout_above="@+id/buttonStart"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="55dp" />
+
+
+
 </RelativeLayout>
