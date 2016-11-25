@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             //Add to sample window of 128 values
 
-
             if(counter < 128){
                 counter++;
                 samples.add(accData);
