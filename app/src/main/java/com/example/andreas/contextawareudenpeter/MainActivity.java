@@ -5,17 +5,13 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import java.io.File;
-import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -35,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //sensor setup
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         //fileManager setup
         fw = new MyFileWriter();
@@ -56,16 +51,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 stopListening();
             }
         });
-
-        senSensorManager.unregisterListener(this, senAccelerometer);
     }
 
     public void startListening() {
+        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void stopListening() {
         senSensorManager.unregisterListener(this, senAccelerometer);
+        Log.d("data.csv", data);
         fw.writeToFile("data.csv", data);
         data = "";
     }
@@ -85,10 +80,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if(counter < 128){
                 counter++;
                 samples.add(accData);
-                Log.d("tag",counter + "");
+                Log.d("Counter",counter + "");
             } else {
                 counter = 0;
-                Log.d("tag2",counter + " nu beregner vi");
                 double min = samples.get(0);
                 double max = samples.get(0);
                 double avg;
@@ -109,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 sd = Math.sqrt(sd/samples.size());
 
-                Log.d("hej", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd);
+                Log.d("Window Values", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd);
                 data += min + ";" + max + ";" + sd + "\n";
 
                 samples.clear();
