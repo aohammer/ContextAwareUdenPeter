@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     private List<Double> samples = new ArrayList<>();
+    private List<Double> samplesOverlap = new ArrayList<>();
     private int counter = 0;
     MyFileWriter fw;
     String data = "";
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         senSensorManager.unregisterListener(this, senAccelerometer);
         Log.d("data.csv", data);
         fw.writeToFile("data.csv", data);
-        data = "";
+        data += "---;---;---" + "\n";
     }
 
 
@@ -83,28 +84,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 Log.d("Counter",counter + "");
             } else {
                 counter = 0;
-                double min = samples.get(0);
-                double max = samples.get(0);
-                double avg;
-                double sd = 0;
-                double sum = 0;
+                calculateValues(samples);
 
-                for (Double sample : samples) {
-                    sum += sample;
-                    if(sample < min) min = sample;
-                    if(sample > max) max = sample;
-                }
-                avg = sum / samples.size();
-
-                for (Double sample : samples)
-                {
-                    sd = sd + Math.pow(sample - avg, 2);
+                for(int i = 0; i < 64; i++) {
+                    samplesOverlap.add(samples.get(i));
                 }
 
-                sd = Math.sqrt(sd/samples.size());
+                if (samplesOverlap.size() > 64) {
+                    calculateValues(samplesOverlap);
+                }
 
-                Log.d("Window Values", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd);
-                data += min + ";" + max + ";" + sd + "\n";
+                samplesOverlap.clear();
+
+                for(int i = 64; i < 128; i++) {
+                    samplesOverlap.add(samples.get(i));
+                }
 
                 samples.clear();
             }
@@ -125,5 +119,38 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onPause();
         senSensorManager.unregisterListener(this);
 
+    }
+
+    private void calculateValues(List<Double> samples) {
+        double min = samples.get(0);
+        double max = samples.get(0);
+        double avg;
+        double sd = 0;
+        double sum = 0;
+
+        for (Double sample : samples) {
+            sum += sample;
+            if(sample < min) min = sample;
+            if(sample > max) max = sample;
+        }
+        avg = sum / samples.size();
+
+        sd = standardDeviation(avg, samples);
+
+        Log.d("Window Values", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd);
+        data += min + ";" + max + ";" + sd + "\n";
+    }
+
+    private double standardDeviation(double avg, List<Double> samples) {
+        double sd = 0;
+
+        for (Double sample : samples)
+        {
+            sd = sd + Math.pow(sample - avg, 2);
+        }
+
+        sd = Math.sqrt(sd/samples.size());
+
+        return sd;
     }
 }
