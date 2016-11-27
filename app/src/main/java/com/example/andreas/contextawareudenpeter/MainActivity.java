@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,15 +56,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void startListening() {
+        Toast.makeText(MainActivity.this, "Start",
+                Toast.LENGTH_SHORT).show();
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void stopListening() {
+        Toast.makeText(MainActivity.this, "Stop",
+                Toast.LENGTH_SHORT).show();
         senSensorManager.unregisterListener(this, senAccelerometer);
         Log.d("data.csv", data);
         fw.writeToFile("data.csv", data);
-        data += "---;---;---" + "\n";
+        data = "";
     }
 
 
