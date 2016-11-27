@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor senAccelerometer;
     private List<Double> samples = new ArrayList<>();
     private int counter = 0;
+    MyFileWriter fw;
+    String data = "";
 
 
     @Override
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         //fileManager setup
+        fw = new MyFileWriter();
 
         //button setup
         Button startButton = (Button) findViewById(R.id.buttonStart);
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void stopListening() {
         senSensorManager.unregisterListener(this, senAccelerometer);
+        fw.writeToFile("data.csv", data);
     }
 
 
@@ -87,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 double min = samples.get(0);
                 double max = samples.get(0);
                 double avg;
-                double standarddeviation = 0;
+                double sd = 0;
                 double sum = 0;
 
                 for (Double sample : samples) {
@@ -99,16 +103,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 for (Double sample : samples)
                 {
-                    standarddeviation = standarddeviation + Math.pow(sample - avg, 2);
+                    sd = sd + Math.pow(sample - avg, 2);
                 }
 
-                standarddeviation = Math.sqrt(standarddeviation/samples.size());
+                sd = Math.sqrt(sd/samples.size());
 
-                Log.d("hej", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + standarddeviation);
+                Log.d("hej", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd);
+                data += min + ";" + max + ";" + sd + "\n";
 
                 samples.clear();
-
-
             }
         }
     }
