@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void stopListening() {
         senSensorManager.unregisterListener(this, senAccelerometer);
         fw.writeToFile("data.csv", data);
+        data = "";
     }
 
 
