@@ -21,11 +21,14 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     BusStopLocator bs;
+    LocationProvider locationProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        locationProvider = new LocationProvider(this);
 
         //button setup
         Button startButton = (Button) findViewById(R.id.buttonStart);
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startListening() {
-        bs = new BusStopLocator(this);
+        bs = new BusStopLocator(this, locationProvider);
         Toast.makeText(MainActivity.this, "Start",
                 Toast.LENGTH_SHORT).show();
     }
