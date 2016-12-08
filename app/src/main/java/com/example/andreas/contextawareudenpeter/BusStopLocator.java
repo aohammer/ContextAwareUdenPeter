@@ -5,7 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.LocationProvider;
+import android.location.Location;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -20,20 +20,22 @@ public class BusStopLocator implements SensorEventListener {
     private LocationProvider locationProvider;
     private SensorManager sensorManager;
     private Sensor senAccelerometer;
-    private List<Double> samples = new ArrayList<>();
-    private List<Double> samplesOverlap = new ArrayList<>();
+    private List<Locator> samples = new ArrayList<>();
+    private List<Locator> samplesOverlap = new ArrayList<>();
     private int counter = 0;
     MyFileWriter fw;
     String data = "";
 
-    public BusStopLocator(Context context) {
+    public BusStopLocator(Context context, LocationProvider locationProvider) {
         //sensor setup
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        this.locationProvider = locationProvider;
 
         //fileManager setup
         fw = new MyFileWriter();
 
         senAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
         sensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -50,8 +52,10 @@ public class BusStopLocator implements SensorEventListener {
 
             if(counter < 128){
                 counter++;
-                samples.add(accData);
                 Log.d("Counter",counter + "");
+                Location loc = locationProvider.getLocation();
+                Locator l = new Locator(accData, loc);
+                samples.add(l);
             } else {
                 counter = 0;
                 calculateValues(samples);
@@ -88,32 +92,39 @@ public class BusStopLocator implements SensorEventListener {
     }
 
     //Help-methods
-    private void calculateValues(List<Double> samples) {
-        double min = samples.get(0);
-        double max = samples.get(0);
+    private void calculateValues(List<Locator> samples) {
+        Locator l = samples.get(0);
+
+        //Accelerometer variables
+        double min = l.getAccelerometerValue();
+        double max = l.getAccelerometerValue();
         double avg;
         double sd = 0;
         double sum = 0;
 
-        for (Double sample : samples) {
-            sum += sample;
-            if(sample < min) min = sample;
-            if(sample > max) max = sample;
+        //Location variables
+
+        for (Locator sample : samples) {
+            double acc = sample.getAccelerometerValue();
+            sum += acc;
+            if(acc < min) min = acc;
+            if(acc > max) max = acc;
         }
         avg = sum / samples.size();
 
         sd = standardDeviation(avg, samples);
 
-        Log.d("Window Values", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd);
+        Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd + " - GPS: " + l.getDistanceToNearestBusStop());
         data += min + ";" + max + ";" + sd + "\n";
     }
 
-    private double standardDeviation(double avg, List<Double> samples) {
+    private double standardDeviation(double avg, List<Locator> samples) {
         double sd = 0;
 
-        for (Double sample : samples)
+        for (Locator sample : samples)
         {
-            sd = sd + Math.pow(sample - avg, 2);
+            double acc = sample.getAccelerometerValue();
+            sd = sd + Math.pow(acc - avg, 2);
         }
 
         sd = Math.sqrt(sd/samples.size());

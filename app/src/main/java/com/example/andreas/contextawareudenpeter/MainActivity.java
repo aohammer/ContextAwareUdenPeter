@@ -1,22 +1,14 @@
 package com.example.andreas.contextawareudenpeter;
 
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity {
     BusStopLocator bs;
+    LocationProvider locationProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +31,12 @@ public class MainActivity extends AppCompatActivity {
                 stopListening();
             }
         });
+
+        locationProvider = new LocationProvider(this);
     }
 
     public void startListening() {
-        bs = new BusStopLocator(this);
+        bs = new BusStopLocator(this, locationProvider);
         Toast.makeText(MainActivity.this, "Start",
                 Toast.LENGTH_SHORT).show();
     }
