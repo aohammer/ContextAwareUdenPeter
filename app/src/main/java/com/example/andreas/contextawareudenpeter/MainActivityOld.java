@@ -5,20 +5,19 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.LocationProvider;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Peter on 08-Dec-16.
- */
+public class MainActivityOld extends AppCompatActivity implements SensorEventListener {
 
-public class BusStopLocator implements SensorEventListener {
-
-    private LocationProvider locationProvider;
-    private SensorManager sensorManager;
+    private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     private List<Double> samples = new ArrayList<>();
     private List<Double> samplesOverlap = new ArrayList<>();
@@ -26,16 +25,52 @@ public class BusStopLocator implements SensorEventListener {
     MyFileWriter fw;
     String data = "";
 
-    public BusStopLocator(Context context) {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
         //sensor setup
-        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         //fileManager setup
         fw = new MyFileWriter();
 
-        senAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        //button setup
+        Button startButton = (Button) findViewById(R.id.buttonStart);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startListening();
+            }
+        });
+
+        Button stopButton = (Button) findViewById(R.id.buttonStop);
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopListening();
+            }
+        });
     }
+
+    public void startListening() {
+        Toast.makeText(MainActivityOld.this, "Start",
+                Toast.LENGTH_SHORT).show();
+        senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    public void stopListening() {
+        Toast.makeText(MainActivityOld.this, "Stop",
+                Toast.LENGTH_SHORT).show();
+        senSensorManager.unregisterListener(this, senAccelerometer);
+        Log.d("data.csv", data);
+        fw.writeToFile("data.csv", data);
+        data = "";
+    }
+
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -80,14 +115,17 @@ public class BusStopLocator implements SensorEventListener {
 
     }
 
-    public void stopAndWrite() {
-        sensorManager.unregisterListener(this, senAccelerometer);
-        Log.d("data.csv", data);
-        fw.writeToFile("data.csv", data);
-        data = "";
+    protected void onResume() {
+        super.onResume();
+        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    //Help-methods
+    protected void onPause() {
+        super.onPause();
+        senSensorManager.unregisterListener(this);
+
+    }
+
     private void calculateValues(List<Double> samples) {
         double min = samples.get(0);
         double max = samples.get(0);
