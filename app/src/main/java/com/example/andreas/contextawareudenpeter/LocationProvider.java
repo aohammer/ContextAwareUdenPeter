@@ -69,7 +69,6 @@ public class LocationProvider {
     public double getLongitude() {return longitude;}
 
     public Location getLocation(){
-
         return location;
     }
 

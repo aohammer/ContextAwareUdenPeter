@@ -14,8 +14,9 @@ public class Locator {
     public Locator (double accelerometer, Location location) {
         this.accelerometer = accelerometer;
         this.location = location;
-        //busgaden.setLatitude(56.172576); busgaden.setLongitude(10.189234);
-
+        busgaden = new Location("busgaden");
+        busgaden.setLatitude(56.172576);
+        busgaden.setLongitude(10.189234);
     }
 
     public double getAccelerometerValue() {
