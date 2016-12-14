@@ -24,7 +24,7 @@ public class BusStopLocator implements SensorEventListener {
     private List<Locator> samplesOverlap = new ArrayList<>();
     private int counter = 0;
     MyFileWriter fw;
-    String data = "";
+    String data = "MIN, MAX, SD, MIN DISTANCE, MAX DISTANCE, AVG DISTANCE, BUS STOP, gt \n";
 
     public BusStopLocator(Context context, LocationProvider locationProvider) {
         //sensor setup
@@ -88,7 +88,7 @@ public class BusStopLocator implements SensorEventListener {
         sensorManager.unregisterListener(this, senAccelerometer);
         Log.d("data.csv", data);
         fw.writeToFile("data.csv", data);
-        data = "";
+        data = "MIN, MAX, SD, MIN DISTANCE, MAX DISTANCE, AVG DISTANCE, BUS STOP, gt \n";
     }
 
     //Help-methods
@@ -102,20 +102,30 @@ public class BusStopLocator implements SensorEventListener {
         double sd = 0;
         double sum = 0;
 
-        //Location variables
+        double gpsMin = l.getDistanceToNearestBusStop();
+        double gpsMax = l.getDistanceToNearestBusStop();
+        double gpsAvg;
+        double gpsSum = 0;
 
+        //Location variables
         for (Locator sample : samples) {
             double acc = sample.getAccelerometerValue();
+            double gps = sample.getDistanceToNearestBusStop();
             sum += acc;
+            gpsSum += gps;
             if(acc < min) min = acc;
             if(acc > max) max = acc;
+            if(gps > gpsMax) gpsMax = gps;
+            if(gps > gpsMax) gpsMax = gps;
+
         }
         avg = sum / samples.size();
+        gpsAvg = gpsSum / samples.size();
 
         sd = standardDeviation(avg, samples);
 
-        Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd + " - GPS: " + l.getDistanceToNearestBusStop());
-        data += min + ";" + max + ";" + sd + "\n";
+        Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd + " - Min distance: " + gpsMin + " - Max distance: " + gpsMax + " - Avg distance: " + gpsAvg + " - Bus stop: ");
+        data += min + "," + max + "," + sd +  ", " + gpsMin + ", " + gpsMax + ", " + gpsAvg + "\n";
     }
 
     private double standardDeviation(double avg, List<Locator> samples) {
