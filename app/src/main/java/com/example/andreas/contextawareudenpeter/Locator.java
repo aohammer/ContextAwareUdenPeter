@@ -28,10 +28,6 @@ public class Locator {
     public Locator (double accelerometer, Location location) {
         this.accelerometer = accelerometer;
         this.location = location;
-        busgaden = new Location("busgaden");
-        busgaden.setLatitude(56.172576);
-        busgaden.setLongitude(10.189234);
-        Log.d("johnjohn", "Locator: " + csvFile);
         try {
             csvReader();
         } catch (IOException e) {
@@ -51,7 +47,6 @@ public class Locator {
         br = new BufferedReader(new FileReader(csvFile));
         while ((line = br.readLine()) != null){
             String[] busStops = line.split(splitString);
-            Log.d("JOHNFAXE", "csvReader: " + String.valueOf(busStops));
         }
     }
 
