@@ -2,6 +2,8 @@ package com.example.andreas.contextawareudenpeter;
 
 import android.location.Location;
 import android.os.Environment;
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -65,7 +67,6 @@ public class CsvReader {
 
                 //Adding busstops to arraylist
                 bustops.add(new BusStop(busStopName, location, schedual));
-
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -25,5 +25,9 @@ public class BusStop {
 
     public List<Integer> getSchedule() { return schedule; }
 
+    public String toString() {
+        return name + ", " + location.toString() + ", " + schedule.toString();
+    }
+
 
 }

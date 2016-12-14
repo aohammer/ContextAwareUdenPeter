@@ -107,7 +107,7 @@ public class BusStopLocator implements SensorEventListener {
         double sum = 0;
 
         //Location variables
-
+        BusStopDistance bsd = l.getDistanceToNearestStop();
 
         //Iterate window
         for (Locator sample : samples) {
@@ -122,7 +122,7 @@ public class BusStopLocator implements SensorEventListener {
         avg = sum / samples.size();
         sd = standardDeviation(avg, samples);
 
-        Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd);
+        Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd + " - Distance: " + bsd.getDistance() + " - Bus Stop: " + bsd.getName());
         data += min + "," + max + "," + sd +  ", " + "\n";
     }
 
