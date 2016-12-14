@@ -107,11 +107,11 @@ public class BusStopLocator implements SensorEventListener {
         double sum = 0;
 
         //Location variables
-        Location loc = l.getLocation();
-        double gpsMinLong = loc.getLongitude();
-        double gpsMaxLong = loc.getLongitude();
-        double gpsMinLat = loc.getLatitude();
-        double gpsMaxLat = loc.getLatitude();
+        //Location loc = l.getLocation();
+        //double gpsMinLong = loc.getLongitude();
+        //double gpsMaxLong = loc.getLongitude();
+        //double gpsMinLat = loc.getLatitude();
+        //double gpsMaxLat = loc.getLatitude();
         double gpsSumLong = 0;
         double gpsSumLat = 0;
         double gpsAvgLong;
@@ -120,34 +120,28 @@ public class BusStopLocator implements SensorEventListener {
         //Iterate window
         for (Locator sample : samples) {
             double acc = sample.getAccelerometerValue();
-            Location gps = sample.getLocation();
+            //Location gps = sample.getLocation();
 
-
-            double longi = gps.getLongitude();
-            double lati = gps.getLatitude();
+            //double longi = gps.getLongitude();
+            //double lati = gps.getLatitude();
 
             sum += acc;
-            gpsSumLong += longi;
-            gpsSumLat += lati;
+            //gpsSumLong += longi;
+            //gpsSumLat += lati;
 
             if(acc < min) min = acc;
             if(acc > max) max = acc;
 
-            if(longi < gpsMinLong) gpsMinLong = longi;
-            if(longi > gpsMaxLong) gpsMaxLong = longi;
-            if(lati < gpsMinLat) gpsMinLat = lati;
-            if(lati > gpsMaxLat) gpsMaxLat = lati;
+            //if(longi < gpsMinLong) gpsMinLong = longi;
+            //if(longi > gpsMaxLong) gpsMaxLong = longi;
+            //if(lati < gpsMinLat) gpsMinLat = lati;
+            //if(lati > gpsMaxLat) gpsMaxLat = lati;
 
         }
         avg = sum / samples.size();
         sd = standardDeviation(avg, samples);
 
-        gpsAvgLong = gpsSumLong / samples.size();
-        gpsAvgLat = gpsSumLat / samples.size();
-
-
-
-        //Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd + " - Min distance: " + gpsMin + " - Max distance: " + gpsMax + " - Avg distance: " + gpsAvg + " - Bus stop: ");
+        Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd);
         data += min + "," + max + "," + sd +  ", " + /* gpsMin + ", " + gpsMax + ", " + gpsAvg + */ "\n";
     }
 
