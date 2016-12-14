@@ -107,42 +107,23 @@ public class BusStopLocator implements SensorEventListener {
         double sum = 0;
 
         //Location variables
-        //Location loc = l.getLocation();
-        //double gpsMinLong = loc.getLongitude();
-        //double gpsMaxLong = loc.getLongitude();
-        //double gpsMinLat = loc.getLatitude();
-        //double gpsMaxLat = loc.getLatitude();
-        double gpsSumLong = 0;
-        double gpsSumLat = 0;
-        double gpsAvgLong;
-        double gpsAvgLat;
+
 
         //Iterate window
         for (Locator sample : samples) {
             double acc = sample.getAccelerometerValue();
-            //Location gps = sample.getLocation();
-
-            //double longi = gps.getLongitude();
-            //double lati = gps.getLatitude();
 
             sum += acc;
-            //gpsSumLong += longi;
-            //gpsSumLat += lati;
 
             if(acc < min) min = acc;
             if(acc > max) max = acc;
-
-            //if(longi < gpsMinLong) gpsMinLong = longi;
-            //if(longi > gpsMaxLong) gpsMaxLong = longi;
-            //if(lati < gpsMinLat) gpsMinLat = lati;
-            //if(lati > gpsMaxLat) gpsMaxLat = lati;
 
         }
         avg = sum / samples.size();
         sd = standardDeviation(avg, samples);
 
         Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd);
-        data += min + "," + max + "," + sd +  ", " + /* gpsMin + ", " + gpsMax + ", " + gpsAvg + */ "\n";
+        data += min + "," + max + "," + sd +  ", " + "\n";
     }
 
     private double standardDeviation(double avg, List<Locator> samples) {
