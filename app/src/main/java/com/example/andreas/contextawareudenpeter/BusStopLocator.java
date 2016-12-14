@@ -6,8 +6,12 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,30 +106,49 @@ public class BusStopLocator implements SensorEventListener {
         double sd = 0;
         double sum = 0;
 
-        double gpsMin = l.getDistanceToNearestBusStop();
-        double gpsMax = l.getDistanceToNearestBusStop();
-        double gpsAvg;
-        double gpsSum = 0;
-
         //Location variables
+        Location loc = l.getLocation();
+        double gpsMinLong = loc.getLongitude();
+        double gpsMaxLong = loc.getLongitude();
+        double gpsMinLat = loc.getLatitude();
+        double gpsMaxLat = loc.getLatitude();
+        double gpsSumLong = 0;
+        double gpsSumLat = 0;
+        double gpsAvgLong;
+        double gpsAvgLat;
+
+        //Iterate window
         for (Locator sample : samples) {
             double acc = sample.getAccelerometerValue();
-            double gps = sample.getDistanceToNearestBusStop();
+            Location gps = sample.getLocation();
+
+
+            double longi = gps.getLongitude();
+            double lati = gps.getLatitude();
+
             sum += acc;
-            gpsSum += gps;
+            gpsSumLong += longi;
+            gpsSumLat += lati;
+
             if(acc < min) min = acc;
             if(acc > max) max = acc;
-            if(gps > gpsMax) gpsMax = gps;
-            if(gps > gpsMax) gpsMax = gps;
+
+            if(longi < gpsMinLong) gpsMinLong = longi;
+            if(longi > gpsMaxLong) gpsMaxLong = longi;
+            if(lati < gpsMinLat) gpsMinLat = lati;
+            if(lati > gpsMaxLat) gpsMaxLat = lati;
 
         }
         avg = sum / samples.size();
-        gpsAvg = gpsSum / samples.size();
-
         sd = standardDeviation(avg, samples);
 
-        Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd + " - Min distance: " + gpsMin + " - Max distance: " + gpsMax + " - Avg distance: " + gpsAvg + " - Bus stop: ");
-        data += min + "," + max + "," + sd +  ", " + gpsMin + ", " + gpsMax + ", " + gpsAvg + "\n";
+        gpsAvgLong = gpsSumLong / samples.size();
+        gpsAvgLat = gpsSumLat / samples.size();
+
+
+
+        //Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd + " - Min distance: " + gpsMin + " - Max distance: " + gpsMax + " - Avg distance: " + gpsAvg + " - Bus stop: ");
+        data += min + "," + max + "," + sd +  ", " + /* gpsMin + ", " + gpsMax + ", " + gpsAvg + */ "\n";
     }
 
     private double standardDeviation(double avg, List<Locator> samples) {

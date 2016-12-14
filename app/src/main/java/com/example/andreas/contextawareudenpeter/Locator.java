@@ -14,7 +14,6 @@ public class Locator {
     private double accelerometer;
     private Location location;
     private String csvFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/location/bustimes.csv";
-
     private BufferedReader br = null;
     private String line = "";
     private String splitString = ",";
@@ -35,8 +34,8 @@ public class Locator {
         return accelerometer;
     }
 
-    public double getDistanceToNearestBusStop() {
-        return 0;
+    public Location getLocation() {
+        return location;
     }
 
     public void csvReader() throws IOException {
