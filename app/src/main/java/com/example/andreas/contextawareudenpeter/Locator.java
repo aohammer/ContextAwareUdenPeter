@@ -2,10 +2,7 @@ package com.example.andreas.contextawareudenpeter;
 
 import android.location.Location;
 import android.os.Environment;
-import android.util.Log;
-
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -16,7 +13,6 @@ import java.io.IOException;
 public class Locator {
     private double accelerometer;
     private Location location;
-    private Location busgaden;
     private String csvFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/location/bustimes.csv";
 
     private BufferedReader br = null;
@@ -40,7 +36,7 @@ public class Locator {
     }
 
     public double getDistanceToNearestBusStop() {
-        return location.distanceTo(busgaden);
+        return 0;
     }
 
     public void csvReader() throws IOException {
