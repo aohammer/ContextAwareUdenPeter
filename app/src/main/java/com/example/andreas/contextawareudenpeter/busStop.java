@@ -8,12 +8,12 @@ import java.util.List;
  * Created by Peter on 14-Dec-16.
  */
 
-public class busStop {
+public class BusStop {
     String name;
     Location location;
     List<Integer> schedule;
 
-    public busStop (String name, Location location, List<Integer> schedule) {
+    public BusStop(String name, Location location, List<Integer> schedule) {
         this.name = name;
         this.location = location;
         this.schedule = schedule;
