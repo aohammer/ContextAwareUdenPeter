@@ -9,11 +9,15 @@ import android.location.Location;
 import android.os.Environment;
 import android.util.Log;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import weka.classifiers.Classifier;
+import weka.core.Attribute;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
 
 /**
  * Created by Peter on 08-Dec-16.
@@ -24,6 +28,9 @@ public class BusStopLocator implements SensorEventListener {
     private LocationProvider locationProvider;
     private SensorManager sensorManager;
     private Sensor senAccelerometer;
+    private Instance iUse;
+    private Context context;
+
     private List<Locator> samples = new ArrayList<>();
     private List<Locator> samplesOverlap = new ArrayList<>();
     private int counter = 0;
@@ -31,6 +38,7 @@ public class BusStopLocator implements SensorEventListener {
     String data = "MIN, MAX, SD, BUS STOP, MIN DISTANCE, MAX DISTANCE, AVG DISTANCE, gt \n";
 
     public BusStopLocator(Context context, LocationProvider locationProvider) {
+        this.context = context;
         //sensor setup
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         this.locationProvider = locationProvider;
@@ -149,7 +157,59 @@ public class BusStopLocator implements SensorEventListener {
         //Calculate average for distance
         avgBsd = sumBsd / size;
 
-        Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd + " - Distance: " + minBsd.getDistance() + " - Bus Stop: " + minBsd.getName());
+
+        //---- WEKA STUFF ---- //
+        try {
+            // Declare two numeric attributes
+            Attribute Attribute1 = new Attribute("MinAcc");
+            Attribute Attribute2 = new Attribute("MaxAcc");
+            Attribute Attribute3 = new Attribute("SdAcc");
+            Attribute Attribute4 = new Attribute("MinDis");
+            Attribute Attribute5 = new Attribute("MaxDis");
+            Attribute Attribute6 = new Attribute("AvgDis");
+
+            // Declare the class attribute along with its values
+            FastVector fvClassVal = new FastVector(2);
+            fvClassVal.addElement("FALSE");
+            fvClassVal.addElement("TRUE");
+            Attribute ClassAttribute = new Attribute("qt", fvClassVal);
+
+            // Declare the feature vector
+            FastVector fvWekaAttributes = new FastVector(7);
+            fvWekaAttributes.addElement(Attribute1);
+            fvWekaAttributes.addElement(Attribute2);
+            fvWekaAttributes.addElement(Attribute3);
+            fvWekaAttributes.addElement(Attribute4);
+            fvWekaAttributes.addElement(Attribute5);
+            fvWekaAttributes.addElement(Attribute6);
+            fvWekaAttributes.addElement(ClassAttribute);
+
+            // Create empty instance
+            Instances isTrainingSet = new Instances("Rel", fvWekaAttributes, 7);
+            isTrainingSet.setClassIndex(6);
+
+            //Our instance
+            iUse = new Instance(isTrainingSet.numAttributes());
+            isTrainingSet.add(iUse);
+            iUse.setValue((Attribute)fvWekaAttributes.elementAt(0), min);
+            iUse.setValue((Attribute)fvWekaAttributes.elementAt(1), max);
+            iUse.setValue((Attribute)fvWekaAttributes.elementAt(2), sd);
+            iUse.setValue((Attribute)fvWekaAttributes.elementAt(3), minBsd.getDistance());
+            iUse.setValue((Attribute)fvWekaAttributes.elementAt(4), maxBsd);
+            iUse.setValue((Attribute)fvWekaAttributes.elementAt(5), avgBsd);
+            iUse.setMissing(6);
+            iUse.setDataset(isTrainingSet);
+
+            // deserialize model
+            Classifier cls = (Classifier) weka.core.SerializationHelper.read(Environment.getExternalStorageDirectory().getAbsolutePath() + "/location/busstop.model");
+            double fDistribution = cls.classifyInstance(iUse);
+            Log.d("WEKA", fDistribution + "");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd + " - Distance: " + minBsd.getDistance() + " - Bus Stop: " + minBsd.getName());
         data += min + "," + max + "," + sd +  ", " + minBsd.getName() + ", " + minBsd.getDistance() + ", " + maxBsd + ", " + avgBsd + "\n";
     }
 
