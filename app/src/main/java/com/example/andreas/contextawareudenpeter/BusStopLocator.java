@@ -28,7 +28,7 @@ public class BusStopLocator implements SensorEventListener {
     private List<Locator> samplesOverlap = new ArrayList<>();
     private int counter = 0;
     MyFileWriter fw;
-    String data = "MIN, MAX, SD, MIN DISTANCE, MAX DISTANCE, AVG DISTANCE, BUS STOP, gt \n";
+    String data = "MIN, MAX, SD, BUS STOP, MIN DISTANCE, MAX DISTANCE, AVG DISTANCE, gt \n";
 
     public BusStopLocator(Context context, LocationProvider locationProvider) {
         //sensor setup
@@ -92,7 +92,7 @@ public class BusStopLocator implements SensorEventListener {
         sensorManager.unregisterListener(this, senAccelerometer);
         Log.d("data.csv", data);
         fw.writeToFile("data.csv", data);
-        data = "MIN, MAX, SD, MIN DISTANCE, MAX DISTANCE, AVG DISTANCE, BUS STOP, gt \n";
+        data = "MIN, MAX, SD, BUS STOP, MIN DISTANCE, MAX DISTANCE, AVG DISTANCE, gt \n";
     }
 
     //Help-methods
@@ -107,23 +107,50 @@ public class BusStopLocator implements SensorEventListener {
         double sum = 0;
 
         //Location variables
-        BusStopDistance bsd = l.getDistanceToNearestStop();
+        BusStopDistance minBsd = l.getDistanceToNearestStop();
 
         //Iterate window
         for (Locator sample : samples) {
             double acc = sample.getAccelerometerValue();
+            BusStopDistance bsd = sample.getDistanceToNearestStop();
 
+            //Add data to sum to get avg
             sum += acc;
 
+            //Update min and max accelerator data
             if(acc < min) min = acc;
             if(acc > max) max = acc;
 
+            //Find min distance to bus stop
+            if(bsd.getDistance() < minBsd.getDistance()) { minBsd = bsd; }
         }
-        avg = sum / samples.size();
+
+        double maxBsd = l.getDistanceToNearestStop().getDistance();
+        double avgBsd;
+        double sumBsd = 0;
+
+        //Iterate window again to make sure GPS coordinates is to the right bus stop
+        for (Locator sample : samples) {
+            BusStopDistance bsd = sample.getDistanceToNearestStop();
+
+            if (bsd.getName().equals(minBsd.getName())) {
+                sumBsd += bsd.getDistance();
+
+                if(bsd.getDistance() > maxBsd) { maxBsd = bsd.getDistance(); }
+            }
+        }
+
+        int size = samples.size();
+
+        //Calculate standard deviation for accelerometer
+        avg = sum / size;
         sd = standardDeviation(avg, samples);
 
-        Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd + " - Distance: " + bsd.getDistance() + " - Bus Stop: " + bsd.getName());
-        data += min + "," + max + "," + sd +  ", " + "\n";
+        //Calculate average for distance
+        avgBsd = sumBsd / size;
+
+        Log.d("Window Value", "Min: " + min + " - Max: " + max + " - Avg: " + avg + " - Sd: " + sd + " - Distance: " + minBsd.getDistance() + " - Bus Stop: " + minBsd.getName());
+        data += min + "," + max + "," + sd +  ", " + minBsd.getName() + ", " + minBsd.getDistance() + ", " + maxBsd + ", " + avgBsd + "\n";
     }
 
     private double standardDeviation(double avg, List<Locator> samples) {
