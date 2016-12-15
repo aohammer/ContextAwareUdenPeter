@@ -18,7 +18,7 @@ public class Locator {
         this.accelerometer = accelerometer;
         this.location = location;
         reader = new CsvReader();
-        //busstops = reader.getBusStops;
+        busstops = reader.getBusstops();
 
     }
 
