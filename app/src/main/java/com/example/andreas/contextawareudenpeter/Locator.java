@@ -40,7 +40,7 @@ public class Locator {
                 closestStopDistance = distanceToBusStop;
             }
         }
-        int time =closestStop.getSchedule().get(0);
+        int time =closestStop.getSchedule();
         //Save the distance and name of the busstop
         return new BusStopDistance(closestStop.getName(), closestStopDistance, time);
 

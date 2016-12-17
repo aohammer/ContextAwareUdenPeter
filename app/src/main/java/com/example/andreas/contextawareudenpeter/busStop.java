@@ -11,9 +11,9 @@ import java.util.List;
 public class BusStop {
     String name;
     Location location;
-    List<Integer>  schedule;
+    int  schedule;
 
-    public BusStop(String name, Location location, List<Integer> schedule) {
+    public BusStop(String name, Location location, int schedule) {
         this.name = name;
         this.location = location;
         this.schedule = schedule;
@@ -23,10 +23,10 @@ public class BusStop {
 
     public Location getLocation() { return location;}
 
-    public List<Integer> getSchedule() { return schedule; }
+    public int getSchedule() { return schedule; }
 
     public String toString() {
-        return name + ", " + location.toString() + ", " + schedule.toString();
+        return name + ", " + location.toString() + ", " + schedule;
     }
 
 

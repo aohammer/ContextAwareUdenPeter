@@ -58,11 +58,10 @@ public class CsvReader {
 
                 int firstTime = Integer.parseInt(time1);
 
-                schedule.add(firstTime);
 
 
                 //Adding busstops to arraylist
-                bustops.add(new BusStop(busStopName, location, schedule));
+                bustops.add(new BusStop(busStopName, location, firstTime));
             }
         } catch (IOException e) {
             e.printStackTrace();

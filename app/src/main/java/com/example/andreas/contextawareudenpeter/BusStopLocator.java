@@ -17,8 +17,14 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.io.ObjectInputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
@@ -46,6 +52,7 @@ public class BusStopLocator implements SensorEventListener {
     private double fDistribution =0;
     private TextView headingText;
     private TextView departureText;
+    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT+1.00"));
 
 
     public BusStopLocator(Context context, LocationProvider locationProvider) {
@@ -268,9 +275,47 @@ public class BusStopLocator implements SensorEventListener {
 
         if(fDistribution==1.0){
             addNotification(bsd);
+            String nextBusStop = "Invalid";
 
-            departureText.setText("16:45");
-            headingText.setText("Storcenter Nord");
+            Date currentTime = cal.getTime();
+            DateFormat date = new SimpleDateFormat("HH:mm");
+            DateFormat hour = new SimpleDateFormat("HH");
+            date.setTimeZone(TimeZone.getTimeZone("GMT+1:00"));
+
+            String localTime = date.format(currentTime);
+            String hourTime = hour.format(currentTime);
+
+            //Get all bus stops to find the next one
+            CsvReader cv = new CsvReader();
+            List<BusStop> busList= cv.getBusstops();
+
+            int j = 0;
+            for (BusStop bus : busList) {
+                if (bsd.getName().equals(bus.getName())) {
+
+                    //If last in list get the first
+                    if (busList.size() < j+1) {
+                        j = 0;
+                    } else { j++; }
+                    nextBusStop = busList.get(j).getName();
+
+                    //Take current time and the minute a bus depart to get a depart time
+                    String t = hourTime + ":" + bsd.getTime();
+                    DateFormat df = new SimpleDateFormat("HH:mm");
+                    try {
+                        if (currentTime.after(df.parse(t))) {
+                            int h = Integer.parseInt(hourTime);
+                            h++;
+                            hourTime = h + "";
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            departureText.setText(hourTime + ":" + bsd.getTime());
+            headingText.setText(nextBusStop);
             return true;
         } else{
             departureText.setText("...");

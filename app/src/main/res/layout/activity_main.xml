@@ -27,7 +27,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="These buttons are for logging data"
         android:id="@+id/textView"
         android:layout_marginBottom="10dp"
         android:layout_above="@+id/buttonStart"
@@ -69,7 +68,7 @@
         android:textSize="40dp"/>
 
     <TextView
-        android:text="Heading"
+        android:text="Heading towards"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/departureText"
@@ -91,7 +90,7 @@
         android:textSize="40dp"/>
 
     <TextView
-        android:text="Time until next departure"
+        android:text="Next departure at"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="19dp"
