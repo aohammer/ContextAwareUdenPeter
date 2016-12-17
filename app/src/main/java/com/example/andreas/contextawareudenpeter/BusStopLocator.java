@@ -30,19 +30,21 @@ public class BusStopLocator implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor senAccelerometer;
     private Instance iUse;
-    private Context context;
 
     private List<Locator> samples = new ArrayList<>();
     private List<Locator> samplesOverlap = new ArrayList<>();
     private int counter = 0;
+    private Context context;
     MyFileWriter fw;
     String data = "MIN, MAX, SD, BUS STOP, MIN DISTANCE, MAX DISTANCE, AVG DISTANCE, gt \n";
+    private double fDistribution =0;
 
     public BusStopLocator(Context context, LocationProvider locationProvider) {
         this.context = context;
         //sensor setup
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         this.locationProvider = locationProvider;
+        this.context = context;
 
         //fileManager setup
         fw = new MyFileWriter();
@@ -171,9 +173,7 @@ public class BusStopLocator implements SensorEventListener {
 
             // Declare the class attribute along with its values
             FastVector fvClassVal = new FastVector(2);
-            //ArrayList<Attribute>  fvClassVal = new ArrayList<Attribute>();
-            //fvClassVal.add("FALSE");
-            //fvClassVal.add("TRUE");
+
             fvClassVal.addElement("FALSE");
             fvClassVal.addElement("TRUE");
             Attribute ClassAttribute = new Attribute("qt", fvClassVal);
@@ -206,7 +206,7 @@ public class BusStopLocator implements SensorEventListener {
 
             // deserialize model
             Classifier cls = (Classifier) weka.core.SerializationHelper.read(Environment.getExternalStorageDirectory().getAbsolutePath() + "/location/busstop.model");
-            double fDistribution = cls.classifyInstance(iUse);
+            fDistribution = cls.classifyInstance(iUse);
             Log.d("WEKA", fDistribution + "");
 
         } catch (Exception e) {
@@ -229,5 +229,8 @@ public class BusStopLocator implements SensorEventListener {
         sd = Math.sqrt(sd/samples.size());
 
         return sd;
+    }
+    public double getWeka(){
+        return fDistribution;
     }
 }

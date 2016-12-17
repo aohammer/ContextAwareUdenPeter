@@ -55,15 +55,15 @@ public class CsvReader {
 
                 //Getting time from the array and converting them to integers and add them to a list
                 String time1 = csvFile[3];
-                String time2 = csvFile[4];
 
                 int firstTime = Integer.parseInt(time1);
-                int secondTime = Integer.parseInt(time2);
+
+
 
                 List<Integer> schedual = new ArrayList<>();
 
                 schedual.add(firstTime);
-                schedual.add(secondTime);
+
 
                 //Adding busstops to arraylist
                 bustops.add(new BusStop(busStopName, location, schedual));

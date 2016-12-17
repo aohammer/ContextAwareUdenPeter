@@ -13,11 +13,13 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     BusStopLocator bs;
     LocationProvider locationProvider;
+    private double wekaParameter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         locationProvider = new LocationProvider(this);
 
@@ -43,6 +45,11 @@ public class MainActivity extends AppCompatActivity {
         bs = new BusStopLocator(this, locationProvider);
         Toast.makeText(MainActivity.this, "Start",
                 Toast.LENGTH_SHORT).show();
+        wekaParameter = bs.getWeka();
+        if (wekaParameter > 0.5){
+
+        }
+
     }
 
     public void stopListening() {

@@ -1,5 +1,6 @@
 package com.example.andreas.contextawareudenpeter;
 
+import android.content.Context;
 import android.location.Location;
 
 import java.util.List;
