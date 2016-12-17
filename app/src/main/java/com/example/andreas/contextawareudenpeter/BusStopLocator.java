@@ -44,6 +44,8 @@ public class BusStopLocator implements SensorEventListener {
     MyFileWriter fw;
     String data = "MIN, MAX, SD, BUS STOP, MIN DISTANCE, MAX DISTANCE, AVG DISTANCE, gt \n";
     private double fDistribution =0;
+    private TextView headingText;
+    private TextView departureText;
 
 
     public BusStopLocator(Context context, LocationProvider locationProvider) {
@@ -60,10 +62,9 @@ public class BusStopLocator implements SensorEventListener {
 
         sensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
-        TextView headingText = (TextView) ((Activity)context).findViewById(R.id.headingText);
-        TextView departureText = (TextView) ((Activity)context).findViewById(R.id.departureText);
-
-
+        this.headingText = (TextView) ((Activity)context).findViewById(R.id.headingText);
+        this.departureText = (TextView) ((Activity)context).findViewById(R.id.departureText);
+        departureText.setText("FetchingH...");
 
     }
 
@@ -221,7 +222,7 @@ public class BusStopLocator implements SensorEventListener {
             Classifier cls = (Classifier) weka.core.SerializationHelper.read(Environment.getExternalStorageDirectory().getAbsolutePath() + "/location/busstop.model");
             fDistribution = cls.classifyInstance(iUse);
             Log.d("WEKA", fDistribution + "");
-            atBusStop();
+            atBusStop(minBsd);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -246,12 +247,12 @@ public class BusStopLocator implements SensorEventListener {
         return sd;
     }
 
-    private void addNotification() {
+    private void addNotification(BusStopDistance bsd) {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this.context)
                         .setSmallIcon(R.drawable.busico)
-                        .setContentTitle("You have a bus to catch!")
-                        .setContentText("Click here to view details");
+                        .setContentTitle("You are at " + bsd.getName())
+                        .setContentText("Click here to view bus details");
 
         Intent notificationIntent = new Intent(this.context, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this.context, 0, notificationIntent,
@@ -263,13 +264,17 @@ public class BusStopLocator implements SensorEventListener {
         manager.notify(0, builder.build());
     }
 
-    public boolean atBusStop(){
-
+    public boolean atBusStop(BusStopDistance bsd){
 
         if(fDistribution==1.0){
-            addNotification();
+            addNotification(bsd);
+
+            departureText.setText("16:45");
+            headingText.setText("Storcenter Nord");
             return true;
         } else{
+            departureText.setText("...");
+            headingText.setText("...");
             return false;
         }
     }

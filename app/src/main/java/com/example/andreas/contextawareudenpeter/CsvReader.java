@@ -20,7 +20,7 @@ public class CsvReader {
     private String line = "";
     private String splitString = ",";
     private List<BusStop> bustops = new ArrayList<>();
-    private List<Integer> scheduel = new ArrayList<>();
+    private List<Integer> schedule = new ArrayList<>();
 
 
     public CsvReader(){
@@ -58,11 +58,11 @@ public class CsvReader {
 
                 int firstTime = Integer.parseInt(time1);
 
-                scheduel.add(firstTime);
+                schedule.add(firstTime);
 
 
                 //Adding busstops to arraylist
-                bustops.add(new BusStop(busStopName, location, scheduel));
+                bustops.add(new BusStop(busStopName, location, schedule));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -76,6 +76,6 @@ public class CsvReader {
     }
 
     public List<Integer> getScheduel(){
-        return scheduel;
+        return schedule;
     }
 }
