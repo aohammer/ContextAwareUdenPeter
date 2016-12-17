@@ -15,6 +15,7 @@ import java.util.List;
 
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
+import weka.core.DenseInstance;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -170,6 +171,9 @@ public class BusStopLocator implements SensorEventListener {
 
             // Declare the class attribute along with its values
             FastVector fvClassVal = new FastVector(2);
+            //ArrayList<Attribute>  fvClassVal = new ArrayList<Attribute>();
+            //fvClassVal.add("FALSE");
+            //fvClassVal.add("TRUE");
             fvClassVal.addElement("FALSE");
             fvClassVal.addElement("TRUE");
             Attribute ClassAttribute = new Attribute("qt", fvClassVal);
@@ -189,7 +193,7 @@ public class BusStopLocator implements SensorEventListener {
             isTrainingSet.setClassIndex(6);
 
             //Our instance
-            iUse = new Instance(isTrainingSet.numAttributes());
+            iUse = new DenseInstance(isTrainingSet.numAttributes());
             isTrainingSet.add(iUse);
             iUse.setValue((Attribute)fvWekaAttributes.elementAt(0), min);
             iUse.setValue((Attribute)fvWekaAttributes.elementAt(1), max);
