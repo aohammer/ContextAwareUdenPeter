@@ -246,9 +246,9 @@ public class BusStopLocator implements SensorEventListener {
     private void addNotification() {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this.context)
-                        .setSmallIcon(R.drawable.bus)
-                        .setContentTitle("Notifications Example")
-                        .setContentText("This is a test notification");
+                        .setSmallIcon(R.drawable.busico)
+                        .setContentTitle("You have a bus to catch!")
+                        .setContentText("Click here to view details");
 
         Intent notificationIntent = new Intent(this.context, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this.context, 0, notificationIntent,
