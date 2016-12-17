@@ -71,7 +71,7 @@ public class BusStopLocator implements SensorEventListener {
 
         this.headingText = (TextView) ((Activity)context).findViewById(R.id.headingText);
         this.departureText = (TextView) ((Activity)context).findViewById(R.id.departureText);
-        departureText.setText("FetchingH...");
+        departureText.setText("Fetching...");
 
     }
 
@@ -292,11 +292,11 @@ public class BusStopLocator implements SensorEventListener {
             int j = 0;
             for (BusStop bus : busList) {
                 if (bsd.getName().equals(bus.getName())) {
-
+                    j++;
                     //If last in list get the first
-                    if (busList.size() < j+1) {
+                    if (busList.size() < j) {
                         j = 0;
-                    } else { j++; }
+                    }
                     nextBusStop = busList.get(j).getName();
 
                     //Take current time and the minute a bus depart to get a depart time
