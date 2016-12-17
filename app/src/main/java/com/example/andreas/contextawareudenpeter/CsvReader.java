@@ -2,7 +2,6 @@ package com.example.andreas.contextawareudenpeter;
 
 import android.location.Location;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -21,6 +20,7 @@ public class CsvReader {
     private String line = "";
     private String splitString = ",";
     private List<BusStop> bustops = new ArrayList<>();
+    private List<Integer> scheduel = new ArrayList<>();
 
 
     public CsvReader(){
@@ -58,15 +58,11 @@ public class CsvReader {
 
                 int firstTime = Integer.parseInt(time1);
 
-
-
-                List<Integer> schedual = new ArrayList<>();
-
-                schedual.add(firstTime);
+                scheduel.add(firstTime);
 
 
                 //Adding busstops to arraylist
-                bustops.add(new BusStop(busStopName, location, schedual));
+                bustops.add(new BusStop(busStopName, location, scheduel));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,5 +73,9 @@ public class CsvReader {
 
     public List<BusStop> getBusstops(){
         return bustops;
+    }
+
+    public List<Integer> getScheduel(){
+        return scheduel;
     }
 }

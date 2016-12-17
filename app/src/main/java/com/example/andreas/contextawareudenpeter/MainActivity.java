@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this, "Start",
                 Toast.LENGTH_SHORT).show();
         wekaParameter = bs.getWeka();
-        if (wekaParameter > 0.5){
+        if (wekaParameter == 1.0){
 
         }
 
