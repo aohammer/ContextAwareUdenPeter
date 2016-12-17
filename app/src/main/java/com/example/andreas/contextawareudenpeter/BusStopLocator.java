@@ -217,6 +217,7 @@ public class BusStopLocator implements SensorEventListener {
         data += min + "," + max + "," + sd +  ", " + minBsd.getName() + ", " + minBsd.getDistance() + ", " + maxBsd + ", " + avgBsd + "\n";
     }
 
+
     private double standardDeviation(double avg, List<Locator> samples) {
         double sd = 0;
 
