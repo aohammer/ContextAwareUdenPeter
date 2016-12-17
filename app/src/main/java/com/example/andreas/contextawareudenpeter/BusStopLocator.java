@@ -1,12 +1,17 @@
 package com.example.andreas.contextawareudenpeter;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Environment;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import java.io.ObjectInputStream;
@@ -30,7 +35,6 @@ public class BusStopLocator implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor senAccelerometer;
     private Instance iUse;
-
     private List<Locator> samples = new ArrayList<>();
     private List<Locator> samplesOverlap = new ArrayList<>();
     private int counter = 0;
@@ -39,12 +43,13 @@ public class BusStopLocator implements SensorEventListener {
     String data = "MIN, MAX, SD, BUS STOP, MIN DISTANCE, MAX DISTANCE, AVG DISTANCE, gt \n";
     private double fDistribution =0;
 
+
     public BusStopLocator(Context context, LocationProvider locationProvider) {
         this.context = context;
+
         //sensor setup
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         this.locationProvider = locationProvider;
-        this.context = context;
 
         //fileManager setup
         fw = new MyFileWriter();
@@ -52,6 +57,8 @@ public class BusStopLocator implements SensorEventListener {
         senAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         sensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
+
     }
 
     @Override
@@ -208,6 +215,7 @@ public class BusStopLocator implements SensorEventListener {
             Classifier cls = (Classifier) weka.core.SerializationHelper.read(Environment.getExternalStorageDirectory().getAbsolutePath() + "/location/busstop.model");
             fDistribution = cls.classifyInstance(iUse);
             Log.d("WEKA", fDistribution + "");
+            atBusStop();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -234,4 +242,33 @@ public class BusStopLocator implements SensorEventListener {
     public double getWeka(){
         return fDistribution;
     }
+
+    private void addNotification() {
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this.context)
+                        .setSmallIcon(R.drawable.bus)
+                        .setContentTitle("Notifications Example")
+                        .setContentText("This is a test notification");
+
+        Intent notificationIntent = new Intent(this.context, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this.context, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) context.getSystemService(this.context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
+    }
+
+    public boolean atBusStop(){
+
+
+        if(fDistribution==1.0){
+            addNotification();
+            return true;
+        } else{
+            return false;
+        }
+    }
+
 }
