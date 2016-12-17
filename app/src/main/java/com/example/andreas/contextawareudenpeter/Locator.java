@@ -40,9 +40,9 @@ public class Locator {
                 closestStopDistance = distanceToBusStop;
             }
         }
-
+        int time =closestStop.getSchedule().get(0);
         //Save the distance and name of the busstop
-        return new BusStopDistance(closestStop.getName(), closestStopDistance);
+        return new BusStopDistance(closestStop.getName(), closestStopDistance, time);
 
     }
 

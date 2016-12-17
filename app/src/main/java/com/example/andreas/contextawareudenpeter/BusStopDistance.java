@@ -7,12 +7,17 @@ package com.example.andreas.contextawareudenpeter;
 public class BusStopDistance {
     private String name;
     private double distance;
+    private int time;
 
-    public BusStopDistance(String name, double distance) {
+    public BusStopDistance(String name, double distance, int time) {
         this.name = name;
         this.distance = distance;
+        this.time = time;
     }
 
     public String getName() { return name; }
     public double getDistance() { return distance; }
+    public int getTime(){ return time; }
+
+
 }

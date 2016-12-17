@@ -11,7 +11,7 @@ import java.util.List;
 public class BusStop {
     String name;
     Location location;
-    List<Integer> schedule;
+    List<Integer>  schedule;
 
     public BusStop(String name, Location location, List<Integer> schedule) {
         this.name = name;

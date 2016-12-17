@@ -239,9 +239,6 @@ public class BusStopLocator implements SensorEventListener {
 
         return sd;
     }
-    public double getWeka(){
-        return fDistribution;
-    }
 
     private void addNotification() {
         NotificationCompat.Builder builder =

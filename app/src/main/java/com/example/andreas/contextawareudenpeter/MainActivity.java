@@ -13,7 +13,6 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     BusStopLocator bs;
     LocationProvider locationProvider;
-    private double wekaParameter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +44,6 @@ public class MainActivity extends AppCompatActivity {
         bs = new BusStopLocator(this, locationProvider);
         Toast.makeText(MainActivity.this, "Start",
                 Toast.LENGTH_SHORT).show();
-        wekaParameter = bs.getWeka();
-        if (wekaParameter == 1.0){
-
-        }
 
     }
 
