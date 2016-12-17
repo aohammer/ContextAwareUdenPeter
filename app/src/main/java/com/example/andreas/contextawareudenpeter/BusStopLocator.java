@@ -1,5 +1,6 @@
 package com.example.andreas.contextawareudenpeter;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -13,6 +14,7 @@ import android.location.Location;
 import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
@@ -57,6 +59,10 @@ public class BusStopLocator implements SensorEventListener {
         senAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         sensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+
+        TextView headingText = (TextView) ((Activity)context).findViewById(R.id.headingText);
+        TextView departureText = (TextView) ((Activity)context).findViewById(R.id.departureText);
+
 
 
     }
