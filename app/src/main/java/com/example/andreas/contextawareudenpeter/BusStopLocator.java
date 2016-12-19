@@ -3,7 +3,6 @@ package com.example.andreas.contextawareudenpeter;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -16,7 +15,6 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.TextView;
 
-import java.io.ObjectInputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,7 +40,7 @@ public class BusStopLocator implements SensorEventListener {
     private LocationProvider locationProvider;
     private SensorManager sensorManager;
     private Sensor senAccelerometer;
-    private Instance iUse;
+    private Instance instance;
     private List<Locator> samples = new ArrayList<>();
     private List<Locator> samplesOverlap = new ArrayList<>();
     private int counter = 0;
@@ -193,41 +191,41 @@ public class BusStopLocator implements SensorEventListener {
             Attribute Attribute6 = new Attribute("AvgDis");
 
             // Declare the class attribute along with its values
-            FastVector fvClassVal = new FastVector(2);
+            FastVector fastVector = new FastVector(2);
 
-            fvClassVal.addElement("FALSE");
-            fvClassVal.addElement("TRUE");
-            Attribute ClassAttribute = new Attribute("qt", fvClassVal);
+            fastVector.addElement("FALSE");
+            fastVector.addElement("TRUE");
+            Attribute ClassAttribute = new Attribute("qt", fastVector);
 
             // Declare the feature vector
-            FastVector fvWekaAttributes = new FastVector(7);
-            fvWekaAttributes.addElement(Attribute1);
-            fvWekaAttributes.addElement(Attribute2);
-            fvWekaAttributes.addElement(Attribute3);
-            fvWekaAttributes.addElement(Attribute4);
-            fvWekaAttributes.addElement(Attribute5);
-            fvWekaAttributes.addElement(Attribute6);
-            fvWekaAttributes.addElement(ClassAttribute);
+            FastVector wekaAttributes = new FastVector(7);
+            wekaAttributes.addElement(Attribute1);
+            wekaAttributes.addElement(Attribute2);
+            wekaAttributes.addElement(Attribute3);
+            wekaAttributes.addElement(Attribute4);
+            wekaAttributes.addElement(Attribute5);
+            wekaAttributes.addElement(Attribute6);
+            wekaAttributes.addElement(ClassAttribute);
 
             // Create empty instance
-            Instances isTrainingSet = new Instances("Rel", fvWekaAttributes, 7);
-            isTrainingSet.setClassIndex(6);
+            Instances trainingSet = new Instances("Rel", wekaAttributes, 7);
+            trainingSet.setClassIndex(6);
 
             //Our instance
-            iUse = new DenseInstance(isTrainingSet.numAttributes());
-            isTrainingSet.add(iUse);
-            iUse.setValue((Attribute)fvWekaAttributes.elementAt(0), min);
-            iUse.setValue((Attribute)fvWekaAttributes.elementAt(1), max);
-            iUse.setValue((Attribute)fvWekaAttributes.elementAt(2), sd);
-            iUse.setValue((Attribute)fvWekaAttributes.elementAt(3), minBsd.getDistance());
-            iUse.setValue((Attribute)fvWekaAttributes.elementAt(4), maxBsd);
-            iUse.setValue((Attribute)fvWekaAttributes.elementAt(5), avgBsd);
-            iUse.setMissing(6);
-            iUse.setDataset(isTrainingSet);
+            instance = new DenseInstance(trainingSet.numAttributes());
+            trainingSet.add(instance);
+            instance.setValue((Attribute)wekaAttributes.elementAt(0), min);
+            instance.setValue((Attribute)wekaAttributes.elementAt(1), max);
+            instance.setValue((Attribute)wekaAttributes.elementAt(2), sd);
+            instance.setValue((Attribute)wekaAttributes.elementAt(3), minBsd.getDistance());
+            instance.setValue((Attribute)wekaAttributes.elementAt(4), maxBsd);
+            instance.setValue((Attribute)wekaAttributes.elementAt(5), avgBsd);
+            instance.setMissing(6);
+            instance.setDataset(trainingSet);
 
             // deserialize model
             Classifier cls = (Classifier) weka.core.SerializationHelper.read(Environment.getExternalStorageDirectory().getAbsolutePath() + "/location/busstop.model");
-            fDistribution = cls.classifyInstance(iUse);
+            fDistribution = cls.classifyInstance(instance);
             Log.d("WEKA", fDistribution + "");
             atBusStop(minBsd);
 
